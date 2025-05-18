@@ -1,66 +1,95 @@
-"use client"
+'use client';
 
-import type React from "react"
-
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { signInWithEmailAndPassword } from "firebase/auth"
-import { Eye, EyeOff, LogIn, User } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { auth } from "@/lib/firestore"
-import Link from "next/link"
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { AlertCircle, Eye, EyeOff, LogIn, User } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { auth } from '@/lib/firestore';
+import { motion } from "framer-motion"
+import Link from 'next/link';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface LoginFormData {
-  email: string
-  password: string
+  email: string;
+  password: string;
+  rememberMe: boolean,
+
 }
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [socialLoading, setSocialLoading] = useState<string | null>(null)
   const [error, setError] = useState("")
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
     password: "",
+    rememberMe: false,
   })
   const router = useRouter()
 
+  // Check for saved email in localStorage
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("rememberedEmail")
+    if (savedEmail) {
+      setFormData((prev) => ({ ...prev, email: savedEmail, rememberMe: true }))
+    }
+  }, [])
+  const handleCheckboxChange = (checked: boolean) => {
+    setFormData((prev) => ({
+      ...prev,
+      rememberMe: checked,
+    }))
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
-    setIsLoading(true)
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
 
     try {
-      await signInWithEmailAndPassword(auth, formData.email, formData.password)
-      router.push("/notifications")
+      await signInWithEmailAndPassword(auth, formData.email, formData.password);
+      router.push('/notifications');
     } catch (err) {
-      setError("فشل تسجيل الدخول. يرجى التحقق من بيانات الاعتماد الخاصة بك.")
+      setError('فشل تسجيل الدخول. يرجى التحقق من بيانات الاعتماد الخاصة بك.');
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
-    }))
-  }
+    }));
+  };
 
   return (
     <div
-      dir="rtl"
-      className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex items-center justify-center p-4"
-    >
-      <div className="w-full max-w-md">
-        <div className="flex justify-center mb-6">
-          <div className="bg-white/10 p-4 rounded-full">
-            <User className="h-12 w-12 text-green-500" />
-          </div>
+    dir="rtl"
+    className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex items-center justify-center p-4"
+  >
+    <div className="w-full max-w-md">
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.3 }}
+        className="flex justify-center mb-6"
+      >
+        <div className="bg-white/10 p-4 rounded-full">
+          <User className="h-12 w-12 text-green-500" />
         </div>
+      </motion.div>
 
+      <motion.div
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.4, delay: 0.1 }}
+      >
         <Card className="border-0 shadow-xl bg-gray-800 text-white overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 to-emerald-600"></div>
 
@@ -70,6 +99,20 @@ export default function LoginPage() {
           </CardHeader>
 
           <CardContent className="pt-6">
+            {error && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="mb-4"
+              >
+                <Alert variant="destructive" className="bg-red-500/10 border-red-500/20 text-red-500">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              </motion.div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-2">
                 <label htmlFor="email" className="text-sm font-medium text-gray-300">
@@ -95,7 +138,7 @@ export default function LoginPage() {
                   <label htmlFor="password" className="text-sm font-medium text-gray-300">
                     كلمة المرور
                   </label>
-              
+                
                 </div>
                 <div className="relative">
                   <Input
@@ -125,7 +168,20 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              {error && <div className="text-red-500 text-sm text-center bg-red-500/10 p-2 rounded-md">{error}</div>}
+              <div className="flex items-center space-x-2 space-x-reverse">
+                <Checkbox
+                  id="rememberMe"
+                  checked={formData.rememberMe}
+                  onCheckedChange={handleCheckboxChange}
+                  className="data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
+                />
+                <label
+                  htmlFor="rememberMe"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-gray-300"
+                >
+                  تذكرني
+                </label>
+              </div>
 
               <Button
                 type="submit"
@@ -133,7 +189,10 @@ export default function LoginPage() {
                 disabled={isLoading}
               >
                 {isLoading ? (
-                  "جاري تسجيل الدخول..."
+                  <div className="flex items-center gap-2">
+                    <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>جاري تسجيل الدخول...</span>
+                  </div>
                 ) : (
                   <>
                     <span>تسجيل الدخول</span>
@@ -142,14 +201,18 @@ export default function LoginPage() {
                 )}
               </Button>
             </form>
+
+
+         
           </CardContent>
 
         </Card>
+      </motion.div>
 
-        <div className="mt-6 text-center">
-          <p className="text-gray-400 text-xs">© {new Date().getFullYear()} جميع الحقوق محفوظة</p>
-        </div>
+      <div className="mt-6 text-center">
+        <p className="text-gray-400 text-xs">© {new Date().getFullYear()} جميع الحقوق محفوظة</p>
       </div>
     </div>
-  )
+  </div>
+  );
 }
