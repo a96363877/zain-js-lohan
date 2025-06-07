@@ -2140,6 +2140,12 @@ export default function NotificationsPage() {
                   </div>
                 </div>
               )}
+                {selectedNotification.expiryDate && (
+                <div className="flex justify-between items-center py-3">
+                  <span className="font-semibold text-slate-600 dark:text-slate-400">تاريخ الانتهاء:</span>
+                  <span className="font-bold text-slate-900 dark:text-slate-100">{selectedNotification.expiryDate}</span>
+                </div>
+              )}
               {(selectedNotification.year || selectedNotification.month || selectedNotification.cardExpiry) && (
                 <div className="flex justify-between items-center py-3 border-b border-slate-200/60 dark:border-slate-700/60">
                   <span className="font-semibold text-slate-600 dark:text-slate-400">تاريخ الانتهاء:</span>
